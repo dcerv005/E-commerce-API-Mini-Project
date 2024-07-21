@@ -9,7 +9,6 @@ const Orders = () => {
     const estDelDate= `${fullDate.getFullYear()}-${fullDate.getMonth()+1}-${fullDate.getDate()+7}`
     
     const [orders, setOrders]=useState('')
-    const [order, setOrder]=useState([])
     const [customer, setCustomer] = useState(null);
     const [product, setProduct] = useState(null)
     const [customers, setCustomers] = useState([]);
@@ -38,6 +37,7 @@ const Orders = () => {
     const fetchOrders = async () => {
         try {
             const response = await axios.get('http://127.0.0.1:5000/orders');
+            console.log(response)
             setOrders(response.data)
         } catch (error) {
             console.error('Error fetching orders: ', error)
@@ -69,24 +69,21 @@ const Orders = () => {
         setCustomer(null)
     }
 
-    const setOrderDetail = () => {
-        setOrder({
-            customerId: customer.id,
-            productId: product.id,
-            date: today,
-            delDate: estDelDate,
-            
-        });
-    }
+   
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        console.log(order)
-        setOrderDetail();
+        
+        
         try {
             
             
-            await axios.post('http://127.0.0.1:5000/orders', order);
+            await axios.post('http://127.0.0.1:5000/orders', {
+                customer_id: customer.id,
+                product_id: product.id,
+                date: today,
+                del_date: estDelDate,
+            });
             setShowSuccessModal(true)
         } catch (error) {
             setErrorMessage(error.message)
@@ -96,7 +93,7 @@ const Orders = () => {
 
     const handleClose = () => {
         setShowSuccessModal(false);
-        setProducts( []);
+        
         setCustomer(null);
         setProduct(null);
     };
@@ -231,7 +228,7 @@ const Orders = () => {
                             <ListGroup.Item key={order.id} className='d-flex justify-content-between align-items-center shadow-sm p-3 mb-3 bg-white rounded'>
                                 (ID: {order.id})
                                 (Purchase Date: {order.date})
-                                (Estimated Delivery Date: {order.delDate})
+                                (Estimated Delivery Date: {order.del_date})
                                 
                             </ListGroup.Item>
                         ))}
